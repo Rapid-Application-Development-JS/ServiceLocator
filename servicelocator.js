@@ -40,7 +40,7 @@
       }
     }
 
-    function invoke(Constr, mixin, args) {
+    function invoke(Constructor, mixin, args) {
       var instance;
 
       function Temp(mixins) {
@@ -55,43 +55,46 @@
         }
       }
 
-      Temp.prototype = Constr.prototype;
-      Constr.prototype = new Temp(mixin);
-      instance = new Constr(args);
-      Constr.prototype = Temp.prototype;
+      Temp.prototype = Constructor.prototype;
+      Constructor.prototype = new Temp(mixin);
+      instance = new Constructor(args);
+      Constructor.prototype = Temp.prototype;
       return instance;
     }
 
-    function deleteProp(object, propList) {
+    function deleteProperty(object, propertyList) {
       var index;
-      if (!object || propList.recursion > 1000) return;
-      propList.recursion += 1;
+      if (!object || propertyList.recursion > 1000) {
+        return;
+      }
+      propertyList.recursion += 1;
       if (object.hasOwnProperty('__mixins')) {
-        for (index = 0; index < propList.length; index++) {
-          delete object[propList[index]];
+        for (index = 0; index < propertyList.length; index++) {
+          delete object[propertyList[index]];
         }
         delete object.__mixins;
       } else {
-        deleteProp(Object.getPrototypeOf(object), propList);
+        deleteProperty(Object.getPrototypeOf(object), propertyList);
       }
     }
 
     function unmix(object) {
       object.__mixins.recursion = 0;
-      deleteProp(object, object.__mixins);
+      deleteProperty(object, object.__mixins);
       return object;
     }
 
-    function createObj(id) {
-      log('Instantiate: ' + id);
-      return servicesWrap[id].instance = invoke(servicesWrap[id].creator, [{radID: id}, serviceMixin]);
+    function createObj(serviceName) {
+      log('Instantiate: ' + serviceName);
+      return servicesWrap[serviceName].instance =
+        invoke(servicesWrap[serviceName].creator, [{id: serviceName}, serviceMixin]);
     }
 
     return {
       /**
        * Takes true/false values as a parameter.
        * When true, writes information about events and channels into the browser console.
-       * @param {boolean} flag
+       * @param {boolean=false} flag
        * @return {Object}
        */
       printLog: function (flag) {
@@ -101,11 +104,11 @@
       /**
        * Takes an object as a parameter. The object contains a set of additional properties and/or methods,
        * which have to contain all objects registered in Service Locator.
-       * @param {Object} obj
+       * @param {Object} object
        * @return {Object}
        */
-      setMixin: function (obj) {
-        serviceMixin = obj;
+      setMixin: function (object) {
+        serviceMixin = object;
         return this;
       },
       /**
@@ -119,22 +122,22 @@
        * Registers an object `obj` under the name value. The flag instantiate shows,
        * whether lazy instantiation is required to request the object from Service Locator.
        * By default instantiate is true.
-       * @param {*} value
-       * @param {Object} obj
+       * @param {Object|String} serviceName
+       * @param {Object} serviceObject
        * @param {boolean=true} instantiate
        * @return {Object}
        */
-      register: function (value, obj, instantiate) {
+      register: function (serviceName, serviceObject, instantiate) {
         function track(id) {
           if (servicesWrap[id] === undefined) {
-            if (typeof obj === 'function' && (instantiate === true || instantiate === undefined)) {
+            if (typeof serviceObject === 'function' && (instantiate === true || instantiate === undefined)) {
               servicesWrap[id] = {
-                creator: obj
+                creator: serviceObject
               };
             } else {
-              mix(obj, {radID: id}, serviceMixin);
+              mix(obj, {id: id}, serviceMixin);
               servicesWrap[id] = {
-                instance: obj
+                instance: serviceObject
               };
             }
           } else {
@@ -142,45 +145,45 @@
           }
         }
 
-        if (Object.prototype.toString.call(value) === '[object Array]') {
-          for (var index = value.length - 1; index > -1; index--) {
-            track(value[index]);
+        if (Object.prototype.toString.call(serviceName) === '[object Array]') {
+          for (var index = serviceName.length - 1; index > -1; index--) {
+            track(serviceName[index]);
           }
         } else {
-          track(value);
+          track(serviceName);
         }
         return this;
       },
       /**
        * Calls the register function for each element of `arrayOfServices`.
-       * Each element of the input array must contain one of the radID/ID/id properties for defining the object name,
+       * Each element of the input array must contain one of the ID or id properties for defining the object name,
        * and service/obj/object/creator for defining the object under registration. There is optional instantiate.
        * @param {Array} arrayOfServices
        * @return {Object}
        */
       registerAll: function (arrayOfServices) {
-        var index, service, radID, obj, instantiate;
+        var index, service, serviceName, object, instantiate;
         for (index = 0; index < arrayOfServices.length; ++index) {
           service = arrayOfServices[index];
-          radID = service.radID || service.ID || service.id;
-          obj = service.service || service.obj || service.object || service.creator;
+          serviceName = service.ID || service.id;
+          object = service.service || service.obj || service.object || service.creator;
           instantiate = (service.instantiate !== undefined) ? !!service.instantiate : true;
-          this.register(radID, obj, instantiate);
+          this.register(serviceName, object, instantiate);
         }
         return this;
       },
       /**
        * Returns the instance of a registered object with an indicated id or creates a new one in the case of
        * lazy instantiation.
-       * @param {*} id
+       * @param {String} serviceName
        * @return {Object}
        */
-      get: function (id) {
-        if (servicesWrap[id] === undefined) {
-          log('Service is not registered: ' + id);
+      get: function (serviceName) {
+        if (servicesWrap[serviceName] === undefined) {
+          log('Service is not registered: ' + serviceName);
           return null;
         }
-        return servicesWrap[id].instance || createObj(id);
+        return servicesWrap[serviceName].instance || createObj(serviceName);
       },
       /**
        * Instantiates and returns all registered objects. Can take the `filter` function as an argument.
@@ -190,18 +193,17 @@
        * @return {Array}
        */
       instantiateAll: function (filter) {
-        var radID, result = [];
+        var serviceName, result = [];
         filter = filter || function () {
           return true;
         };
-        for (radID in servicesWrap) {
+        for (serviceName in servicesWrap) {
           if (
-              servicesWrap.hasOwnProperty(radID) &&
-              servicesWrap[radID].creator &&
-              !servicesWrap[radID].instance &&
-              filter(radID)
+            servicesWrap.hasOwnProperty(serviceName) &&
+            servicesWrap[serviceName].creator && !servicesWrap[serviceName].instance &&
+            filter(serviceName)
           ) {
-            result.push(createObj(radID));
+            result.push(createObj(serviceName));
           }
         }
         return result;
@@ -212,12 +214,15 @@
        * @return {Array}
        */
       getAllInstantiate: function (withConstructor) {
-        var radID, result = [], flag;
-        for (radID in servicesWrap) {
-          flag = (withConstructor) ? !!servicesWrap[radID].creator : true;
-          if (servicesWrap.hasOwnProperty(radID) && servicesWrap[radID].instance &&
-            servicesWrap[radID].creator) {
-            result.push(radID);
+        var serviceName, result = [], flag;
+        for (serviceName in servicesWrap) {
+          flag = (withConstructor) ? !!servicesWrap[serviceName].creator : true;
+          if (
+            servicesWrap.hasOwnProperty(serviceName) &&
+            servicesWrap[serviceName].instance &&
+            servicesWrap[serviceName].creator
+          ) {
+            result.push(serviceName);
           }
         }
         return result;
@@ -225,23 +230,23 @@
       /**
        * Deletes a service instance with an indicated id.
        * Returns false in case the service with the indicated id is not found or has no instance.
-       * @param {*} id
+       * @param {String} serviceName
        * @return {boolean}
        */
-      removeInstance: function (id) {
-        if (!servicesWrap[id] || !servicesWrap[id].instance) {
+      removeInstance: function (serviceName) {
+        if (!servicesWrap[serviceName] || !servicesWrap[serviceName].instance) {
           return false;
         }
-        delete servicesWrap[id].instance;
+        delete servicesWrap[serviceName].instance;
       },
       /**
        * Deletes a service named value from Service Locator and returns its instance.
        * The flag `removeMixin` points at the necessity to delete the added properties.
-       * @param {*} value
+       * @param {Object|String} servieName
        * @param {boolean=false} removeMixin
        * @return {Object}
        */
-      unregister: function (value, removeMixin) {
+      unregister: function (servieName, removeMixin) {
         var result, index;
 
         function remove(id) {
@@ -255,13 +260,13 @@
           return serviceData.instance;
         }
 
-        if (Object.prototype.toString.call(value) === '[object Array]') {
+        if (Object.prototype.toString.call(servieName) === '[object Array]') {
           result = [];
-          for (index = value.length - 1; index > -1; index--) {
-            result.push(remove(value[index]));
+          for (index = servieName.length - 1; index > -1; index--) {
+            result.push(remove(servieName[index]));
           }
         } else {
-          result = remove(value);
+          result = remove(servieName);
         }
         return result;
       },
@@ -274,7 +279,7 @@
        */
       unregisterAll: function (removeMixins) {
         var id, result = [], instance;
-        for (id  in servicesWrap) {
+        for (id in servicesWrap) {
           if (servicesWrap.hasOwnProperty(id)) {
             instance = this.unregister(id, removeMixins);
             if (instance) result.push(instance);
