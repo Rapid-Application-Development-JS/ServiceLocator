@@ -1,0 +1,50 @@
+{
+  "authors": [
+    "Yuriy Luchaninov <y.luchaninov@mobidev.biz> (http://mobidev.biz/)"
+  ],
+  "contributors": [
+    {
+      "email": "a.trofimenko@mobidev.biz",
+      "name": "Anton Trofimenko"
+    },
+    {
+      "email": "y.luchaninov@mobidev.biz",
+      "name": "Yuriy Luchaninov"
+    }
+  ],
+  "dependencies": {},
+  "description": "Dependency injection approach using Service Locator pattern",
+  "devDependencies": {
+    "chai": "^2.*",
+    "mocha": "^2.*",
+    "uglifyjs": "^2.*"
+  },
+  "homepage": "https://github.com/Rapid-Application-Development-JS/ServiceLocator",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "keywords": [
+    "service-locator",
+    "service locator",
+    "dependency injection",
+    "decouple",
+    "registry"
+  ],
+  "license": "MIT",
+  "main": [
+    "release/service-locator.min.js",
+    "release/service-locator.min.js.map"
+  ],
+  "moduleType": [
+    "globals",
+    "amd",
+    "es6",
+    "node"
+  ],
+  "name": "service-locator",
+  "version": "1.0.1"
+}

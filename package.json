@@ -1,20 +1,37 @@
 {
-  "name": "ServiceLocator",
-  "version": "1.0.0",
-  "description": "Dependency injection approach using Service Locator pattern",
-  "main": "servicelocator.min.js",
-  "scripts": {
-    "test": "mocha",
-    "build": "uglifyjs servicelocator.js --compress --mangle --screw-ie8 --comments --lint --source-map servicelocator.map --output servicelocator.min.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Rapid-Application-Development-JS/ServiceLocator.git"
-  },
+  "authors": [
+    "Yuriy Luchaninov <y.luchaninov@mobidev.biz> (http://mobidev.biz/)"
+  ],
   "bugs": {
     "url": "https://github.com/Rapid-Application-Development-JS/ServiceLocator/issues"
   },
-  "license": "MIT",
+  "contributors": [
+    {
+      "email": "y.luchaninov@mobidev.biz",
+      "name": "Yuriy Luchaninov"
+    },
+    {
+      "email": "a.trofimenko@mobidev.biz",
+      "name": "Anton Trofimenko"
+    }
+  ],
+  "dependencies": {},
+  "description": "Dependency injection approach using Service Locator pattern",
+  "devDependencies": {
+    "chai": "^2.*",
+    "grunt": "^0.4.*",
+    "grunt-contrib-clean": "^0.6.*",
+    "grunt-contrib-copy": "^0.8.*",
+    "grunt-contrib-uglify": "^0.9.*",
+    "grunt-stripcomments": "^0.3.*",
+    "gulp": "^3.*",
+    "gulp-rename": "^1.2.*",
+    "gulp-sourcemaps": "^1.5.*",
+    "gulp-uglify": "^1.2.0",
+    "mocha": "^2.*",
+    "uglifyjs": "^2.*"
+  },
+  "homepage": "https://github.com/Rapid-Application-Development-JS/ServiceLocator",
   "keywords": [
     "service-locator",
     "service locator",
@@ -22,21 +39,22 @@
     "decouple",
     "registry"
   ],
-  "author": "Yuriy Luchaninov <y.luchaninov@mobidev.biz> (http://mobidev.biz/)",
-  "contributors": [
-    {
-      "name": "Yuriy Luchaninov",
-      "email": "y.luchaninov@mobidev.biz"
-    }
+  "lib_name": "service-locator",
+  "license": "MIT",
+  "main": [
+    "release/service-locator.min.js",
+    "release/service-locator.min.js.map"
   ],
+  "name": "service-locator",
+  "private": false,
   "readmeFilename": "README.md",
-  "homepage": "https://github.com/Rapid-Application-Development-JS/ServiceLocator",
-  "dependencies": {
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rapid-Application-Development-JS/ServiceLocator.git"
   },
-  "devDependencies": {
-    "chai": "*",
-    "mocha": "*",
-    "uglifyjs": "*"
+  "scripts": {
+    "build-cli": "uglifyjs 'source/service-locator.js' --compress --mangle --screw-ie8 --comments --lint --source-map 'release/service-locator.min.js.map' --output 'release/service-locator.min.js'",
+    "test": "mocha"
   },
-  "private": false
+  "version": "1.0.1"
 }

@@ -3,215 +3,502 @@ Service Locator
 
 Implementation of dependency injection approach using `Service Locator` pattern.
 
-`Service Locator` is dependency injection pattern. The `Service Locator` pattern does not describe how to instantiate the services. It describes a way to register **services** and **locate** them in a global point of access. A `Service Locator` should be able to locate a **service** using a central **registry** without knowing its concrete type. For example, it might use a string key which on request returns the object depending on code initialization. This allows you to replace the concrete implementation of the dependency without modifying the objects.
+`Service Locator` is dependency injection pattern. The `Service Locator` pattern does not describe how to instantiate
+the services. It describes a way to register **services** and **locate** them in a global point of access.
+A `Service Locator` should be able to locate a **service** using a central registry without knowing its concrete type.
+For example, it might use a string key which on request returns the object depending on code initialization.
+This allows you to replace the concrete implementation of the dependency without modifying the objects.
 
-Advantages:
+## Advantages:
 
-* option of adding extra attributes and methods using **mixin** pattern to all objects registered in Service Locator;
+* option of adding extra attributes and methods using **mixin** pattern to all objects registered in `Service Locator`;
 * option of **lazy instantiation**;
 * unregistering instances;
 * unregistering objects;
 * applications can optimize themselves at run-time by selectively adding and removing items from the `Service Locator`;
-* large sections of a library or application can be completely separated, the only link between them becomes the **registry**;
+* large sections of a library or application can be completely separated, the only link between them becomes the registry;
 * solves the drawback of factories allows to manage the creation of objects automatically and centrally;
 
-Disvantages:
+## Disadvantages:
 
 * your classes have an extra dependency on the `Service Locator`;
 * you have to write additional code to add **service references** to the locator before your service objects use it;
-* objects placed in the **registry** are black boxed, this makes it harder to detect and recover from their errors, and may make the system as a whole less reliable;
+* objects placed in the **registry** are black boxed, this makes it harder to detect and recover from their errors,
+and may make the system as a whole less reliable;
 * sometimes **registry** can be a security vulnerability, because it allows outsiders to inject code into an application;
 * the source code has added complexity, this makes the source code more difficult to understand;
 * the registry hides the object dependencies, causing errors when dependencies are missing;
-* the **registry** makes code harder to test, since all tests need to interact with the same global `Service Locator` to set the fake dependencies of a service object under test;
+* the **registry** makes code harder to test, since all tests need to interact with the same global `Service Locator`
+to set the fake dependencies of a service object under test;
 
-## Dependencies
+### API
 
-None.
+#### Require in Node
 
-## Methods
-
-#### printLog
 ```javascript
-printLog(flag);
+var ServiceLocator = require("service-locator");
 ```
 
-Takes **true/false** values as a parameter. When **true**, writes information about events and channels into the browser console. 
+> printLog (flag?: boolean)
 
-#### setMixin
+Takes _true/false_ values as a parameter.
+When _true_, writes information about events and channels into the console.
+
 ```javascript
-setMixin(obj);
+ServiceLocator.printLog(true);
 ```
 
-Takes an object as a parameter. The object contains a set of additional properties and/or methods, which have to contain all objects registered in Service Locator.
+> setMixin (objectWithMixins: Object)
 
-#### getLocator
+Takes an object as a parameter.
+The object contains a set of additional properties and/or methods, which have to contain all objects registered
+in `Service Locator`.
+
 ```javascript
-getLocator();
+ServiceLocator.setMixin({
+	mixinMethod: function () {}
+});
 ```
 
-Returns the container that has all the objects registered in Service Locator.
+> register (serviceName: String, serviceObject: Function|Object, instantiate?: boolean, constructorArguments?: Array): boolean
 
-#### register
+Registers an object **serviceObject** under the name **serviceName**.
+The flag **instantiate** shows, whether lazy instantiation is required to request the object from `Service Locator`.
+By default **instantiate** is _true_.
+
 ```javascript
-register(value, obj, instantiate);
+ServiceLocator.register('serviceName', function (a, b) {
+	this.a = a;
+	this.b = b;
+}, true, [1, 2]);
 ```
 
-Registers an object **obj** under the name **value**. The flag **instantiate** shows, whether lazy instantiation is required to request the object from `Service Locator`. By default **instantiate** is **true**.
-
-#### registerAll
 ```javascript
-registerAll(arrayOfServices);
+ServiceLocator.register('serviceName', {
+	a: 1,
+	b: 2
+});
 ```
 
-Calls the **register** function for each element of **arrayOfServices**. Each element of the input array must contain one of the **radID**/**ID**/**id** properties for defining the object name, and **service**/**obj**/**object**/**creator** for defining the object under registration. There is optional **instantiate**.
+> registerAll (arrayOfServices: Array): Array<String>
 
-#### get
+Calls the **register** function for each element of **arrayOfServices**.
+Each element of the array must contain one of the **ID** or **id** properties for defining the object name,
+and **service/object/creator** for defining the object under registration.
+There is optional **instantiate**.
+
 ```javascript
-get(id);
+ServiceLocator.registerAll([
+	{
+		/**
+		 * @constructor
+		 * @param {*} value
+		 */
+		creator: function (value) {
+			this.prop = value;
+		},
+		id: 'ServiceFive',
+		instantiate: false
+	},
+	{
+		service: {
+			prop: 'Some property'
+		},
+		id: 'ServiceSix'
+	}
+]);
 ```
 
-Returns the instance of a registered object with an indicated **id** or creates a new one in the case of lazy instantiation.
+> get (serviceName: String): null|Object
 
-#### instantiateAll
+Returns the instance of a registered object with an indicated **serviceName** or creates a new one in the case of
+lazy instantiation.
+
 ```javascript
-instantiateAll(filter)
+ServiceLocator.get('serviceName')
 ```
 
-Instantiates and returns all registered objects. Can take the **filter** function as an argument. The **filter** function must return the logical value. In case **filter** is predefined, only the services that underwent the check will be instantiated. 
+> instantiateAll (filter?: Function)
 
-#### getAllInstantiate
+Instantiates and returns all registered objects.
+Can take the **filter** function as an argument.
+The **filter** function must return the logical value.
+In case filter is predefined, only the services that underwent the check will be instantiated.
+
 ```javascript
-getAllInstantiate(withConstructor)
+ServiceLocator.instantiateAll(function (serviceName) {
+	if (serviceName === 'ServiceName') {
+		return false;
+	} else {
+		return true;
+	}
+})
 ```
 
-Returns the array of instantiated objects.
+> getAllInstantiate (): Array<String>
 
-#### removeInstance
+Returns the array of instantiated service objects.
+
 ```javascript
-removeInstance(id)
+ServiceLocator.getAllInstantiate();
 ```
 
-Deletes a service instance with an indicated **id**. Returns **false** in case the service with the indicated **id** is not found or has no instance.
+> removeInstance (serviceName: String): boolean
 
-#### unregister
+Deletes a service instance with an indicated **serviceName**.
+Returns _false_ in case the service with the indicated **serviceName** is not found or has no **instance**.
+This do not remove service itself, only instances of it.
+
 ```javascript
-unregister(value, removeMixin)
+ServiceLocator.removeInstance('ServiceName');
 ```
 
-Deletes a service named **value** from Service Locator and returns its instance. The flag **removeMixin** points at the necessity to delete the added properties.
+> unregister (serviceName: Array|String, removeMixins?: boolean): null|Object
 
-#### unregisterAll
+Deletes a service named **serviceName** from `Service Locator` and returns it's instance.
+The flag **removeMixins** points at the necessity to delete the added mixin properties.
+
 ```javascript
-unregisterAll(removeMixins)
+ServiceLocator.unregister('ServiceName', true);
 ```
 
-Deletes all registered services from `Service Locator`, and returns the array of their instances. The flag **removeMixin** points at the necessity to delete the added properties in the services that will be deleted.
+> unregisterAll(removeMixins?: boolean): Object<Object>
 
-## Examples
+Deletes all registered services from `Service Locator`, and returns the array of their instances.
+The flag **removeMixin** points at the necessity to delete the added properties in the services that will be deleted.
+
+```javascript
+ServiceLocator.unregisterAll(true);
+```
+
+## Example
 
 ###Creating a new instance:
 
-In runtime environment like Node.js.
+####In runtime environment like node.js or io.js
 
 ```javascript
-var serviceLocator = require("ServiceLocator");
-```
-In the browser:
-
-```javascript
-var serviceLocator = window.ServiceLocator;
+var ServiceLocator = require("service-locator");
 ```
 
-###Make another service locator:
+####In the browser:
 
 ```javascript
-var AnotherServiceLocator = new ServiceLocator.Constructor;
+var ServiceLocator = window.ServiceLocator;
 ```
 
-###Initialize constructor for multiple instances:
+####Print debug information in console
 
 ```javascript
-var ConstructorServiceLocator = require("ServiceLocator").Constructor;
-var serviceLocator = new ConstructorServiceLocator();
+ServiceLocator.printLog(true);
 ```
 
-###Log module actions:
+####Create mixin for services
 
 ```javascript
-serviceLocator.printLog(true);
-```
-
-###Define and register services:
-
-```javascript
-var ServiceOne = function ServiceOne() {
-	this.name = 'ServiceOne';
-	this.resolve = function Resolve () {
-		return 'Service number one resolve result';
-	};
+var mixin = {
+	/**
+	 * Set in service object new property <_state> for further use
+	 * @param {*} value
+	 */
+	setState: function (value) {
+		this._state = value;
+	},
+	/**
+	 * Get <_state> property from service object
+	 * @return {*}
+	 */
+	getState: function () {
+		return '_state' in this ? this._state : undefined;
+	},
+	/**
+	 * Get service object name
+	 * @return {String}
+	 */
+	getName: function () {
+		return 'name' in this ? this.name : 'Service has no name!';
+	}
 };
-var ServiceTwo = function ServiceTwo() {
+```
+
+####Set it for ServiceLocator
+
+```javascript
+ServiceLocator.setMixin(mixin);
+```
+
+####Create constructors for services
+
+```javascript
+/** @constructor */
+function ServiceOne() {
+	this.name = 'ServiceOne'; // This property is not required. Made for example
+}
+
+/** @constructor */
+function ServiceTwo() {
 	this.name = 'ServiceTwo';
-	this.resolve = function Resolve () {
-		return 'Service number two resolve result';
+	this.serviceFunction = function () {
+		return 'Service number two function';
 	};
-};
-serviceLocator.register(ServiceOne.name, ServiceOne);
-serviceLocator.register(ServiceTwo.name, ServiceTwo);
+}
+/**
+ * @param {*=} data
+ * @constructor
+ */
+function ServiceThree(data) {
+	// Service without <name> property
+	this.data = data;
+}
+/** @constructor */
+function ServiceFour() {
+	this.name = 'ServiceFour';
+}
 ```
 
-###Instantiates and returns all registered service objects:
+####Registering service objects in "ServiceLocator"
+
+####With instantiation immediately after registration
 
 ```javascript
-serviceLocator.instantiateAll();
-// Instantiate: ServiceOne
-// Instantiate: ServiceTwo
+ServiceLocator.register('ServiceOne', ServiceOne, true);
 ```
 
-###Returns the array of instantiated service objects:
+In `Service Locator` registry it's instance look like this:
 
 ```javascript
-var instantiatedServices = serviceLocator.getAllInstantiate();
-console.dir(instantiatedServices); // ['ServiceOne', 'ServiceTwo']
+{
+	__mixins: ["id", "setState", "getState", "getName"]
+	getName: function,
+	getState: function,
+	id: "ServiceOne",
+	name: "ServiceOne",
+	setState: function
+}
 ```
 
-###Get instance of registered object:
+####With lazy instantiation
 
 ```javascript
-var sOne = serviceLocator.get(ServiceOne.name); // { name: 'ServiceOne', resolve: [Function: Resolve] }
-var result = sOne.resolve(); // 'Service number one resolve result'
+ServiceLocator.register('ServiceTwo', ServiceTwo, false);
 ```
 
-###Working with unregistered service objects:
+No instance but have construction function:
 
 ```javascript
-serviceLocator.get("ServiceThree"); // 'Service is not registered: ServiceThree'
-serviceLocator.unregister(ServiceOne.name);
-serviceLocator.get(ServiceOne.name); // null
-serviceLocator.getAllInstantiate(); // [ 'ServiceTwo' ]
+{
+	creator: function ServiceTwo(),
+	name: "ServiceTwo",
+	prototype: ServiceTwo
+}
 ```
 
-##License
+#### Default immediate registration
 
-The MIT License (MIT)
+```javascript
+ServiceLocator.register('ServiceThree', ServiceThree, true, [{mydata: "example information"}]);
+```
 
-Copyright (c) 2015 [Mobidev](http://mobidev.biz/)
+```javascript
+ServiceLocator.get('ServiceThree').data; // {mydata: "example information"}
+```
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+####Create service object by yourself
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+```javascript
+var serviceFour = new ServiceFour;
+```
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+####Inject perilously created service object
+
+```javascript
+ServiceLocator.register(serviceFour.name, serviceFour);
+// or
+ServiceLocator.register('ServiceFour', serviceFour);
+```
+
+####Get instance of service
+
+```javascript
+var ONE = ServiceLocator.get('ServiceOne');
+```
+
+####Call mixin method
+
+```javascript
+ONE.getName(); // "ServiceOne"
+```
+
+####Call another one mixin method
+
+```javascript
+ONE.setState("launched");
+```
+
+####Now call mixin directly from "ServiceLocator"
+
+```javascript
+ServiceLocator.get('ServiceOne').getState(); // "launched"
+```
+
+####Service number three have mixin but have no property "name"
+
+```javascript
+ServiceLocator.get('ServiceThree').getName(); // → "Service has no name!"
+```
+
+####Get currently instantiated services
+
+```javascript
+ServiceLocator.getAllInstantiate(); // ["ServiceOne", "ServiceThree", "ServiceFour"]
+```
+
+#### Instantiate all service objects but "ServiceTwo"
+
+```javascript
+ServiceLocator.instantiateAll(function (serviceName) {
+	if (serviceName === 'ServiceTwo') {
+		return false;
+	} else {
+		return true;
+	}
+});
+```
+
+####Now without exceptions
+
+```javascript
+ServiceLocator.instantiateAll(); // → "Instantiate: ServiceTwo"
+```
+
+####Get currently instantiated services
+
+```javascript
+ServiceLocator.getAllInstantiate(); // ["ServiceOne", "ServiceTwo", "ServiceThree", "ServiceFour"]
+```
+
+###Register multiple service objects
+
+Current state of registry inside `Service Locator`:
+
+```javascript
+{
+	"ServiceFour":  ▸Object
+	"ServiceOne":   ▸Object
+	"ServiceThree": ▸Object
+	"ServiceTwo":   ▸Object
+}
+```
+
+Add multiple services:
+
+```javascript
+ServiceLocator.registerAll([
+	{
+		/**
+		 * @constructor
+		 * @param {*} value
+		 */
+		creator: function (value) {
+			this.prop = value;
+		},
+		id: 'ServiceFive',
+		instantiate: false
+	},
+	{
+		service: {
+			prop: 'Some property'
+		},
+		id: 'ServiceSix'
+	}
+]);
+```
+
+Newly added services:
+
+```javascript
+{
+	ServiceFive: ▸Object
+	creator:     ▸Function
+}
+```
+
+```javascript
+{
+	ServiceSix: ▸Object
+	instance:   ▸Object
+}
+```
+
+####Previosly setted state
+
+```javascript
+ServiceLocator.get('ServiceOne').getState(); // "launched"
+```
+
+####Remove instance, but keep service. This remove any non-default setted data in service object.
+
+```javascript
+ServiceLocator.removeInstance('ServiceOne');
+```
+
+####"ServiceLocator" will instantiate new instance of service object
+
+```javascript
+ServiceLocator.get('ServiceOne').getState(); // undefined
+// → "Instantiate: ServiceOne"
+```
+
+As you see, previously saved data won't back.
+
+####Deletes a service from "ServiceLocator" and returns it's instance
+
+```javascript
+var unregisteredService = ServiceLocator.unregister('ServiceFive');
+```
+
+```javascript
+{
+	__mixins: ["id", "setState", "getState", "getName"],
+	id:       "ServiceFive",
+	getState: ▸Function,
+	prop:     ▸Array,
+	setState: ▸Function,
+}
+```
+
+####Same as above, but without mixins
+
+```javascript
+var unregisteredServiceWithoutMixins = ServiceLocator.unregister('ServiceFive', true);
+```
+
+Any mentions was removed so:
+
+```javascript
+ServiceLocator.get('ServiceFive'); // null
+// → "Service is not registered: ServiceFive"
+```
+
+####Delete all registered services from "ServiceLocator", and return array of their instances
+
+```javascript
+ServiceLocator.unregisterAll();
+```
+
+```javascript
+{
+	"ServiceFive":  ▸Object,
+	"ServiceFour":  ▸Object,
+	"ServiceOne":   ▸Object,
+	"ServiceSix":   ▸Object,
+	"ServiceThree": ▸Object,
+	"ServiceTwo":   ▸Object,
+}
+```
+
+####Same as above, but returned objects have their mixins removed
+
+```javascript
+ServiceLocator.unregisterAll(true);
+```

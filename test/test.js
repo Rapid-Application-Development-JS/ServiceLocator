@@ -1,7 +1,7 @@
 var chai = require('chai');
 var assert = chai.assert;
 var should = chai.should();
-var SeviceLocator = require('../servicelocator.min.js');
+var ServiceLocator = require('../source/service-locator.js');
 describe('0.1: Service Locator. Basic tests.', function () {
   var ServiceLocatorConstructor = null;
   var serviceLocator = null;
@@ -13,14 +13,14 @@ describe('0.1: Service Locator. Basic tests.', function () {
     };
   };
   it('0.1.1: Service Locator → Initialization', function (done) {
-    ServiceLocatorConstructor = SeviceLocator.Constructor;
+    ServiceLocatorConstructor = ServiceLocator.Constructor;
     assert.typeOf(ServiceLocatorConstructor, 'function');
     serviceLocator = new ServiceLocatorConstructor();
     assert.typeOf(serviceLocator, 'object');
     done();
   });
   it('0.1.2: Service Locator → Register Service', function (done) {
-    assert.typeOf(serviceLocator.register(serviceName, ExampleService), 'object');
+    (serviceLocator.register(serviceName, ExampleService)).should.equal(true);
     done();
   });
   it('0.1.3: Service Locator → Instantiate Services', function (done) {
