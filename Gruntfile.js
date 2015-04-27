@@ -1,12 +1,12 @@
 module.exports = function (grunt) {
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    config: grunt.file.readJSON('config.json'),
     copy: {
       build: {
         files: [
           {
-            src: 'source/<%= pkg.lib_name %>.js',
-            dest: 'release/<%= pkg.lib_name %>.min.js'
+            src: '<%= config.folderSource %>/<%= config.name %>.js',
+            dest: '<%= config.folderCompiled %>/<%= config.name %>.min.js'
           }
         ]
       }
@@ -18,7 +18,7 @@ module.exports = function (grunt) {
           multiline: true
         },
         src: [
-          'release/<%= pkg.lib_name %>.min.js'
+          '<%= config.folderCompiled %>/<%= config.lib_name %>.min.js'
         ]
       }
     },
@@ -29,8 +29,8 @@ module.exports = function (grunt) {
         },
         files: [
           {
-            dest: 'release/<%= pkg.lib_name %>.min.js',
-            src: 'release/<%= pkg.lib_name %>.min.js'
+            dest: '<%= config.folderCompiled %>/<%= config.name %>.min.js',
+            src: '<%= config.folderCompiled %>/<%= config.name %>.min.js'
           }
         ]
       }
@@ -40,8 +40,8 @@ module.exports = function (grunt) {
         files: [
           {
             src: [
-              'source/<%= pkg.lib_name %>.js',
-              'release/<%= pkg.lib_name %>.min.js'
+              '<%= config.folderSource %>/<%= config.name %>.js',
+              '<%= config.folderCompiled %>/<%= config.name %>.min.js'
             ]
           }
         ]
