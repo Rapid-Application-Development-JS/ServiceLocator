@@ -162,7 +162,7 @@ The flag **removeMixins** points at the necessity to delete the added mixin prop
 ServiceLocator.unregister('ServiceName', true);
 ```
 
-> unregisterAll(removeMixins?: boolean): Object<Object>
+> unregisterAll(removeMixins?: boolean): Object
 
 Deletes all registered services from `Service Locator`, and returns the array of their instances.
 The flag **removeMixin** points at the necessity to delete the added properties in the services that will be deleted.
