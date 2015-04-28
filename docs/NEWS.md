@@ -1,6 +1,11 @@
 Service Locator Release Notes
 ==========================
 
+Version 1.0.2 - Apr 28, 2015
+---------------------
+
+Rename library files to **servicelocatorjs**
+
 Version 1.0.1 - Apr 23, 2015
 ---------------------
 

@@ -58,5 +58,5 @@
     "build-cli": "uglifyjs 'source/servicelocator.js' --compress --mangle --screw-ie8 --comments --lint --source-map 'release/servicelocator.min.js.map' --output 'release/servicelocator.min.js'",
     "test": "mocha"
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
