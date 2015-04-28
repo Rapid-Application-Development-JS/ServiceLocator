@@ -36,7 +36,7 @@ to set the fake dependencies of a service object under test;
 #### Require in Node
 
 ```javascript
-var ServiceLocator = require("service-locator");
+var ServiceLocator = require("servicelocatorjs");
 ```
 
 > printLog (flag?: boolean)
@@ -178,7 +178,7 @@ ServiceLocator.unregisterAll(true);
 ####In runtime environment like node.js or io.js
 
 ```javascript
-var ServiceLocator = require("service-locator");
+var ServiceLocator = require("servicelocatorjs");
 ```
 
 ####In the browser:

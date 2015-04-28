@@ -1,7 +1,7 @@
 var chai = require('chai');
 var assert = chai.assert;
 var should = chai.should();
-var ServiceLocator = require('../source/service-locator.js');
+var ServiceLocator = require('../source/servicelocator.js');
 describe('0.1: Service Locator. Basic tests.', function () {
   var ServiceLocatorConstructor = null;
   var serviceLocator = null;

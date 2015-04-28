@@ -1,17 +1,14 @@
-WARNING!!! THIS IS DUMMY INFO! THIS PACKAGE IS NOT REGISTERED ANYWHERE!
-==========================
-
 Installation
 ===========
 
 ###Bower
 
 ```bash
-bower install --save service-locator
+bower install --save servicelocatorjs
 ```
 
 ###Node package manager
 
 ```bash
-npm install --save service-locator
+npm install --save servicelocatorjs
 ```

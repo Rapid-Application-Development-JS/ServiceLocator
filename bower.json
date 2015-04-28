@@ -36,8 +36,8 @@
   ],
   "license": "MIT",
   "main": [
-    "release/service-locator.min.js",
-    "release/service-locator.min.js.map"
+    "release/servicelocator.min.js",
+    "release/servicelocator.min.js.map"
   ],
   "moduleType": [
     "globals",

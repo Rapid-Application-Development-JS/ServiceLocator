@@ -3,6 +3,6 @@
   "folderCompiled_": "Folder path where to store compiled source",
   "folderSource": "source",
   "folderSource_": "Folder path where source files is stored",
-  "name": "service-locator",
+  "name": "servicelocator",
   "name_": "Name of library and main file"
 }

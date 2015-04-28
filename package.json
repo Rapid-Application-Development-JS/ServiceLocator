@@ -44,8 +44,8 @@
     "url": "https://github.com/Rapid-Application-Development-JS/ServiceLocator/blob/master/LICENSE.md"
   },
   "main": [
-    "release/service-locator.min.js",
-    "release/service-locator.min.js.map"
+    "release/servicelocator.min.js",
+    "release/servicelocator.min.js.map"
   ],
   "name": "servicelocatorjs",
   "private": false,
@@ -55,7 +55,7 @@
     "url": "git+https://github.com/Rapid-Application-Development-JS/ServiceLocator.git"
   },
   "scripts": {
-    "build-cli": "uglifyjs 'source/service-locator.js' --compress --mangle --screw-ie8 --comments --lint --source-map 'release/service-locator.min.js.map' --output 'release/service-locator.min.js'",
+    "build-cli": "uglifyjs 'source/servicelocator.js' --compress --mangle --screw-ie8 --comments --lint --source-map 'release/servicelocator.min.js.map' --output 'release/servicelocator.min.js'",
     "test": "mocha"
   },
   "version": "1.0.1"

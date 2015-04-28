@@ -1,8 +1,8 @@
 if (typeof window === 'undefined') {
   // If running under Node
-  var ServiceLocator = require("../source/service-locator.js");
+  var ServiceLocator = require("../source/servicelocator.js");
 }
-// Assume that previously included in <head><script src=service-locator.js>
+// Assume that previously included in <head><script src=servicelocator.js>
 
 var locator = new ServiceLocator.Constructor;
 
