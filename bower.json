@@ -45,6 +45,6 @@
     "es6",
     "node"
   ],
-  "name": "service-locator",
+  "name": "servicelocatorjs",
   "version": "1.0.1"
 }

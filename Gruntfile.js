@@ -18,7 +18,7 @@ module.exports = function (grunt) {
           multiline: true
         },
         src: [
-          '<%= config.folderCompiled %>/<%= config.lib_name %>.min.js'
+          '<%= config.folderCompiled %>/<%= config.name %>.min.js'
         ]
       }
     },

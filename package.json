@@ -39,7 +39,6 @@
     "decouple",
     "registry"
   ],
-  "lib_name": "service-locator",
   "license": {
     "type": "MIT",
     "url": "https://github.com/Rapid-Application-Development-JS/ServiceLocator/blob/master/LICENSE.md"
@@ -48,7 +47,7 @@
     "release/service-locator.min.js",
     "release/service-locator.min.js.map"
   ],
-  "name": "service-locator",
+  "name": "servicelocatorjs",
   "private": false,
   "readmeFilename": "README.md",
   "repository": {
