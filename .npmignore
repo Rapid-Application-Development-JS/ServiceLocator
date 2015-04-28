@@ -49,3 +49,5 @@ profile
 
 # OSX
 .DS_Store
+
+bower_components
