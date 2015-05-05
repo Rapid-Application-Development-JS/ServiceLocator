@@ -303,7 +303,7 @@
 				return true;
 			},
 			/**
-			 * Checks whereve service is registered
+			 * Checks wherever service is registered
 			 * @param {String} serviceName
 			 * @return {boolean}
 			 * @public
@@ -314,7 +314,7 @@
 				return serviceName in servicesWrap;
 			},
 			/**
-			 * Checks whereve service is instantiated
+			 * Checks wherever service is instantiated
 			 * @param {String} serviceName
 			 * @return {boolean}
 			 * @public
@@ -447,6 +447,8 @@
 			 * @param {boolean=} removeMixins - default is false
 			 * @return {null|Object}
 			 * @public
+			 * @deprecated 1.0.3
+			 * @todo add to library docs
 			 */
 			unregister: function (serviceName, removeMixins) {
 				var result, index, that = this;
@@ -477,6 +479,32 @@
 					result = remove(serviceName);
 				}
 				return result;
+			},
+			/**
+			 * Deletes a service named <serviceName> from <ServiceLocator> and returns it's instance.
+			 * The flag <removeMixins> points at the necessity to delete the added mixin properties.
+			 * @param {String} serviceName
+			 * @param {boolean=} removeMixins - default is false
+			 * @return {boolean|null|Object}
+			 * @public
+			 * @since 1.0.3
+			 * @todo add to library docs
+			 */
+			unRegister: function (serviceName, removeMixins) {
+				if (!this.isRegistered(serviceName)) {
+					return false;
+				}
+				if (!this.isInstantiated(serviceName)) {
+					return null;
+				}
+				var instance = null;
+				if (removeMixins) {
+					instance = unmix(servicesWrap[serviceName].instance);
+				} else {
+					instance = servicesWrap[serviceName].instance;
+				}
+				delete servicesWrap[serviceName];
+				return instance;
 			},
 			/**
 			 * Deletes all registered services from <ServiceLocator>, and returns the array of their instances.
