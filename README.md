@@ -39,7 +39,7 @@ to set the fake dependencies of a service object under test.
 var ServiceLocator = require("servicelocatorjs");
 ```
 
-> printLog (flag?: boolean)
+##### printLog (flag?: boolean)
 
 Takes _true/false_ values as a parameter.
 When _true_, writes information about events and channels into the console.
@@ -48,7 +48,7 @@ When _true_, writes information about events and channels into the console.
 ServiceLocator.printLog(true);
 ```
 
-> setMixin (objectWithMixins: Object)
+##### setMixin (objectWithMixins: Object)
 
 Takes an object as a parameter.
 The object contains a set of additional properties and/or methods, which have to contain all objects registered
@@ -60,7 +60,7 @@ ServiceLocator.setMixin({
 });
 ```
 
-> getMixin (): Object
+##### getMixin (): Object
 
 Return current set mixins.
 
@@ -68,7 +68,7 @@ Return current set mixins.
 ServiceLocator.getMixin();
 ```
 
-> mixin(objectWithMixins?: Object): Object
+##### mixin(objectWithMixins?: Object): Object
 
 Set and/or return mixins.
 
@@ -78,7 +78,7 @@ ServiceLocator.mixin({
 });
 ```
 
-> register (serviceName: String, serviceObject: Function|Object, instantiate?: boolean, constructorArguments?: Array): boolean
+##### register (serviceName: String, serviceObject: Function|Object, instantiate?: boolean, constructorArguments?: Array): boolean
 
 Registers an object **serviceObject** under the name **serviceName**.
 The flag **instantiate** shows whether lazy instantiation is required to request the object from `Service Locator`.
@@ -98,7 +98,7 @@ ServiceLocator.register('serviceName', {
 });
 ```
 
-> registerAll (arrayOfServices: Array): Array<String>
+##### registerAll (arrayOfServices: Array): Array<String>
 
 Calls the **register** function for each element of **arrayOfServices**.
 Each element of the array must contain one of the **ID** or **id** properties for defining the object name,
@@ -127,7 +127,7 @@ ServiceLocator.registerAll([
 ]);
 ```
 
-> get (serviceName: String): null|Object
+##### get (serviceName: String): null|Object
 
 Returns the instance of a registered object with an indicated **serviceName** or creates a new one in case of
 lazy instantiation.
@@ -136,7 +136,7 @@ lazy instantiation.
 ServiceLocator.get('serviceName')
 ```
 
-> instantiate (serviceName: String): boolean
+##### instantiate (serviceName: String): boolean
 
 Instantiates service by name.
 
@@ -144,7 +144,7 @@ Instantiates service by name.
 ServiceLocator.instantiate('serviceName')
 ```
 
-> instantiateAll (filter?: Function)
+##### instantiateAll (filter?: Function)
 
 Instantiates and returns all registered objects.
 Can take the **filter** function as an argument.
@@ -161,7 +161,7 @@ ServiceLocator.instantiateAll(function (serviceName) {
 })
 ```
 
-> getAllInstantiate (): Array<String>
+##### getAllInstantiate (): Array<String>
 
 Returns the array of instantiated service objects.
 
@@ -169,7 +169,7 @@ Returns the array of instantiated service objects.
 ServiceLocator.getAllInstantiate();
 ```
 
-> isRegistered (serviceName: String): boolean
+##### isRegistered (serviceName: String): boolean
 
 Checks whether the service is registered.
 
@@ -177,7 +177,7 @@ Checks whether the service is registered.
 ServiceLocator.isRegistered('ServiceName');
 ```
 
-> isInstantiated (serviceName: String): boolean
+##### isInstantiated (serviceName: String): boolean
 
 Checks whether the service is instantiated.
 
@@ -185,7 +185,7 @@ Checks whether the service is instantiated.
 ServiceLocator.isInstantiated('ServiceName');
 ```
 
-> removeInstance (serviceName: String): boolean
+##### removeInstance (serviceName: String): boolean
 
 Deletes a service instance with an indicated **serviceName**.
 Returns _false_ in case the service with the indicated **serviceName** is not found or has no **instance**.
@@ -195,7 +195,7 @@ This does not remove the service itself, but only its instances.
 ServiceLocator.removeInstance('ServiceName');
 ```
 
-> unRegister (serviceName: Array|String, removeMixins?: boolean): null|Object
+##### unRegister (serviceName: Array|String, removeMixins?: boolean): null|Object
 
 Deletes a service named **serviceName** from `Service Locator` and returns its instance.
 The flag **removeMixins** points at the necessity to delete the added mixin properties.
@@ -204,7 +204,7 @@ The flag **removeMixins** points at the necessity to delete the added mixin prop
 ServiceLocator.unRegister('ServiceName', true);
 ```
 
-> unRegisterAll(removeMixins?: boolean): Object
+##### unRegisterAll(removeMixins?: boolean): Object
 
 Deletes all registered services from `Service Locator` and returns the array of their instances.
 The flag **removeMixin** points at the necessity to delete the added properties in the services that will be deleted.
