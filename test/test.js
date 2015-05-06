@@ -3,11 +3,8 @@ console.log('\033[2J');
 // < Includes >
 //
 var ServiceLocator = require('../source/servicelocator.js');
-ServiceLocator.printLog(false);
 var chai = require('chai');
 var assert = chai.assert;
-//assert = require('assert');
-var should = chai.should();
 //
 // < Config >
 //
@@ -24,6 +21,12 @@ function objLength(hash) {
 }
 function merge(array1, array2) {
 	return array1.concat(array2).sort();
+}
+function fresh() {
+	locator = new ServiceLocator.Constructor();
+}
+function pullName(service) {
+	return service.name ? service.name : service.constructor.name;
 }
 //
 // < Initialization >
@@ -78,10 +81,19 @@ function ServiceFour() {
 	this.name = 'ServiceFour';
 }
 var serviceFour = new ServiceFour();
+var services = [
+	ServiceOne,
+	ServiceTwo,
+	ServiceThree,
+	ServiceFour
+];
 //
 // < Tests >
 //
 describe('Initialization', function () {
+	beforeEach(function () {
+		fresh();
+	});
 	it('Include', function () {
 		assert.isObject(ServiceLocator,
 			'ServiceLocator must be instantiated');
@@ -93,29 +105,74 @@ describe('Initialization', function () {
 			'Constructor must create new object');
 	});
 });
-describe('Services', function () {
-	before(function () {
-		locator = new ServiceLocator.Constructor;
-	});
+describe('Mixins', function () {
 	beforeEach(function () {
-		locator.unregisterAll();
+		fresh();
+	});
+	it('setMixin()', function () {
+		assert.isObject(locator.setMixin(),
+			'No service locator returned');
+		assert.lengthOf(keys(locator.getMixin()), 0,
+			'Mixins should be empty');
+		assert.isObject(locator.setMixin('DUMMY VALUE'));
+		assert.lengthOf(keys(locator.getMixin()), 0,
+			'Mixins should be empty');
+		locator.setMixin(mixin);
+		assert.lengthOf(keys(locator.getMixin()), Object.keys(mixin).length,
+			'Mixins not installed correctly');
+	});
+	it('getMixin()', function () {
+		assert.isObject(locator.getMixin(),
+			'Empty object expected');
+		assert.lengthOf(keys(locator.setMixin(mixin).getMixin()), keys(mixin).length,
+			'Mixins not installed correctly');
+		assert.property(locator.getMixin(), 'setState',
+			'Expected parameter not found');
+		assert.property(locator.getMixin(), 'getState',
+			'Expected parameter not found');
+		assert.property(locator.getMixin(), 'getName',
+			'Expected parameter not found');
+	});
+	it('mixin()', function () {
+		assert.lengthOf(keys(locator.mixin()), 0,
+			'Mixins should be empty');
+		assert.isObject(locator.mixin('DUMMY VALUE'));
+		assert.lengthOf(keys(locator.mixin()), 0,
+			'Mixins should be empty');
+		locator.mixin(mixin);
+		assert.lengthOf(keys(locator.mixin()), objLength(mixin),
+			'Mixins not installed correctly');
+		assert.property(locator.mixin(), 'setState',
+			'Expected parameter not found');
+		assert.property(locator.mixin(), 'getState',
+			'Expected parameter not found');
+		assert.property(locator.mixin(), 'getName',
+			'Expected parameter not found');
+	});
+});
+describe('Services', function () {
+	beforeEach(function () {
+		fresh();
 	});
 	describe('Registration', function () {
-		it('register() no arguments', function () {
+		beforeEach(function () {
+			fresh();
+		});
+		it('register() - no arguments', function () {
 			assert.isFalse(locator.register(),
 				'No parameters at all. Result must be falsy');
 		});
-		it('register() wrong arguments', function () {
+		it('register() - wrong arguments', function () {
 			assert.isFalse(locator.register(1, new Function),
 				'Service name must be string only. Result must be falsy');
 			assert.isFalse(locator.register('serviceName', ''),
 				'Service object must be function or object. Result must be falsy');
 		});
-		it('register(name, ConstructorFunction) pass name and constructor function', function () {
+		it('register(name, ConstructorFunction) - pass name and constructor function', function () {
 			assert.isTrue(locator.register(ServiceOne.name, ServiceOne),
 				'Service registration failed');
 			assert.isFalse(locator.register(ServiceOne.name),
-				'Successufull registration of already registered module');
+				'Successful registration of already registered module');
 			assert.include(locator.getAllInstantiate(), ServiceOne.name,
 				'Service not included');
 			assert.isTrue(locator.isRegistered(ServiceOne.name),
@@ -123,7 +180,7 @@ describe('Services', function () {
 			assert.isTrue(locator.isInstantiated(ServiceOne.name),
 				'Service not instantiated');
 		});
-		it('register(name, object) pass name and object', function () {
+		it('register(name, object) - pass name and object', function () {
 			assert.isTrue(locator.register(ServiceFour.name + '_1', serviceFour),
 				'Prepared object not registered');
 			assert.isTrue(locator.isInstantiated(serviceFour.name + '_1'),
@@ -138,7 +195,7 @@ describe('Services', function () {
 				'Service registration failed');
 			assert.isFalse(locator.isInstantiated(ServiceThree.name),
 				'Service is instantiated');
-			assert.isObject(locator.instantiate(ServiceThree.name),
+			assert.isTrue(locator.instantiate(ServiceThree.name),
 				'Waiting for object from instance');
 			assert.property(locator.get(ServiceThree.name), 'data',
 				'Service should have data property');
@@ -161,6 +218,9 @@ describe('Services', function () {
 		});
 	});
 	describe('Get service instance', function () {
+		beforeEach(function () {
+			fresh();
+		});
 		it('get() - without arguments in registration', function () {
 			assert.isTrue(locator.register(ServiceOne.name, ServiceOne),
 				'Service registration failed');
@@ -187,14 +247,17 @@ describe('Services', function () {
 		});
 	});
 	describe('Instance manipulation', function () {
+		beforeEach(function () {
+			fresh();
+		});
 		it('instantiate()', function () {
 			assert.isTrue(locator.register(ServiceOne.name, ServiceOne),
 				'Service registration failed');
-			assert.isNull(locator.instantiate(),
+			assert.isFalse(locator.instantiate(),
 				'No argument passed');
-			assert.isNull(locator.instantiate(ServiceTwo.name),
+			assert.isFalse(locator.instantiate(ServiceTwo.name),
 				'Successful instantiation of unregistered service');
-			assert.isObject(locator.instantiate(ServiceOne.name),
+			assert.isTrue(locator.instantiate(ServiceOne.name),
 				'Expect instance');
 		});
 		it('instantiateAll() - no filter', function () {
@@ -226,13 +289,11 @@ describe('Services', function () {
 				return false;
 			}), 0, 'Not instantiated correctly');
 			assert.lengthOf(locator.instantiateAll(function (serviceName) {
-				if ((serviceName === ServiceOne.name) || (serviceName === ServiceTwo.name)) {
-					return true;
-				}
-				return false;
+				return !!((serviceName === ServiceOne.name) || (serviceName === ServiceTwo.name));
 			}), 2, 'Not instantiated correctly');
 		});
 		it('removeInstance()', function () {
+			locator.printLog(true);
 			assert.isTrue(locator.register(ServiceOne.name, ServiceOne, true),
 				'Service instantiation failed: ' + ServiceOne.name);
 			assert.isTrue(locator.register(ServiceTwo.name, ServiceTwo, true),
@@ -253,6 +314,9 @@ describe('Services', function () {
 		});
 	});
 	describe('De-registration', function () {
+		beforeEach(function () {
+			fresh();
+		});
 		it('unRegister() - without arguments', function () {
 			assert.isTrue(locator.register(ServiceOne.name, ServiceOne, true),
 				'Service registered incorrectly');
@@ -260,12 +324,12 @@ describe('Services', function () {
 				'Service registered incorrectly');
 			assert.lengthOf(locator.getAllInstantiate(), 1,
 				'Expect services registered');
-			assert.deepEqual(locator.unregister(ServiceOne.name),
+			assert.deepEqual(locator.unRegister(ServiceOne.name),
 				{name: 'ServiceOne', __mixins: ['id'], id: 'ServiceOne'},
 				'Service has unexpected'
 			);
 			assert.isFalse(locator.isRegistered(ServiceOne.name));
-			assert.isNull(locator.unregister(ServiceTwo.name));
+			assert.isNull(locator.unRegister(ServiceTwo.name));
 			assert.isFalse(locator.isRegistered(ServiceTwo.name));
 		});
 		it('unRegister() - don\'t remove mixins', function () {
@@ -289,7 +353,7 @@ describe('Services', function () {
 				'Different set of members'
 			);
 			assert.isFalse(locator.isRegistered(ServiceOne.name));
-			assert.isNull(locator.unregister(ServiceTwo.name));
+			assert.isNull(locator.unRegister(ServiceTwo.name));
 			assert.isFalse(locator.isRegistered(ServiceTwo.name));
 		});
 		it('unRegister() - remove mixins', function () {
@@ -311,14 +375,57 @@ describe('Services', function () {
 				'Different set of members after un-registration'
 			);
 			assert.isFalse(locator.isRegistered(ServiceOne.name));
-			assert.isNull(locator.unregister(ServiceTwo.name));
+			assert.isNull(locator.unRegister(ServiceTwo.name));
 			assert.isFalse(locator.isRegistered(ServiceTwo.name));
 		});
-		it('unRegisterAll()', function () {
-			//map(locator.unRegister, map(pullServiceName, [ServiceOne]));
+		it('unRegisterAll() - without arguments', function () {
+			assert.isObject(locator.mixin(mixin));
+			services.forEach(function (service) {
+				assert.isTrue(locator.register(pullName(service), service));
+			});
+			var unregistered = locator.unRegisterAll();
+			assert.isObject(unregistered);
+			var mix = merge(keys(mixin), ['__mixins', 'id']);
+			services.forEach(function (service) {
+				var name = pullName(service);
+				assert.property(unregistered, name);
+				assert.includeMembers(keys(unregistered[name]), mix);
+			});
+		});
+		it('unRegisterAll() - don\'t remove mixins', function () {
+			assert.isObject(locator.mixin(mixin));
+			services.forEach(function (service) {
+				assert.isTrue(locator.register(pullName(service), service));
+			});
+			var unregistered = locator.unRegisterAll(false);
+			assert.isObject(unregistered);
+			var mix = merge(keys(mixin), ['__mixins', 'id']);
+			services.forEach(function (service) {
+				var name = pullName(service);
+				assert.property(unregistered, name);
+				assert.includeMembers(keys(unregistered[name]), mix);
+			});
+		});
+		it('unRegisterAll() - remove mixins', function () {
+			assert.isObject(locator.mixin(mixin));
+			services.forEach(function (service) {
+				assert.isTrue(locator.register(pullName(service), service));
+			});
+			var unregistered = locator.unRegisterAll(true);
+			assert.isObject(unregistered);
+			services.forEach(function (service) {
+				var name = pullName(service);
+				assert.property(unregistered, name);
+				keys(mixin).forEach(function (propName) {
+					assert.notProperty(unregistered[name], propName);
+				});
+			});
 		});
 	});
 	describe('State check', function () {
+		beforeEach(function () {
+			fresh();
+		});
 		it('isRegistered()', function () {
 			assert.isFalse(locator.isRegistered(),
 				'Non existent service');
@@ -342,62 +449,5 @@ describe('Services', function () {
 			assert.isTrue(locator.isInstantiated(ServiceThree.name),
 				ServiceThree.name);
 		});
-	});
-});
-describe('Mixins', function () {
-	before(function () {
-		locator = new ServiceLocator.Constructor;
-	});
-	beforeEach(function () {
-		locator.mixin({});
-	});
-	it('setMixin()', function () {
-		assert.isObject(locator.setMixin(),
-			'No service locator returned');
-		assert.lengthOf(keys(locator.getMixin()), 0,
-			'Mixins should be empty');
-		assert.isObject(locator.setMixin('DUMMY VALUE'));
-		assert.lengthOf(keys(locator.getMixin()), 0,
-			'Mixins should be empty');
-		locator.setMixin(mixin);
-		assert.lengthOf(keys(locator.getMixin()), Object.keys(mixin).length,
-			'Mixins not setted correctly');
-	});
-	it('getMixin()', function () {
-		assert.isObject(locator.getMixin(),
-			'Empty object expected');
-		assert.lengthOf(keys(locator.setMixin(mixin).getMixin()), keys(mixin).length,
-			'Mixins not setted correctly');
-		assert.property(locator.getMixin(), 'setState',
-			'Expected parameter not found');
-		assert.property(locator.getMixin(), 'getState',
-			'Expected parameter not found');
-		assert.property(locator.getMixin(), 'getName',
-			'Expected parameter not found');
-	});
-	it('mixin()', function () {
-		assert.lengthOf(keys(locator.mixin()), 0,
-			'Mixins should be empty');
-		assert.isObject(locator.mixin('DUMMY VALUE'));
-		assert.lengthOf(keys(locator.mixin()), 0,
-			'Mixins should be empty');
-		locator.mixin(mixin);
-		assert.lengthOf(keys(locator.mixin()), objLength(mixin),
-			'Mixins not setted correctly');
-		assert.property(locator.mixin(), 'setState',
-			'Expected parameter not found');
-		assert.property(locator.mixin(), 'getState',
-			'Expected parameter not found');
-		assert.property(locator.mixin(), 'getName',
-			'Expected parameter not found');
-	});
-});
-describe('Something', function () {
-	before(function () {
-		locator = new ServiceLocator.Constructor;
-	});
-	beforeEach(function () {
-		locator.mixin({});
-		locator.unregisterAll();
 	});
 });

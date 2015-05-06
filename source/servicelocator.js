@@ -114,7 +114,7 @@
 		 * @param {Object} object
 		 * @return {Object}
 		 */
-		function unmix(object) {
+		function unMix(object) {
 			object.__mixins.recursion = 0;
 			deleteProperty(object, object.__mixins);
 			return object;
@@ -141,7 +141,6 @@
 		 * @return {String}
 		 * @private
 		 * @since 1.0.3
-		 * @todo add to library docs
 		 */
 		function varType(variable) {
 			return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
@@ -153,7 +152,6 @@
 		 * @return {boolean}
 		 * @private
 		 * @since 1.0.3
-		 * @todo add to library docs
 		 */
 		function isObject(variable) {
 			return varType(variable) === 'object';
@@ -165,7 +163,6 @@
 		 * @return {boolean}
 		 * @private
 		 * @since 1.0.3
-		 * @todo add to library docs
 		 */
 		function isString(variable) {
 			return typeof variable === 'string';
@@ -177,7 +174,6 @@
 		 * @return {boolean}
 		 * @private
 		 * @since 1.0.3
-		 * @todo add to library docs
 		 */
 		function isFunction(variable) {
 			return typeof variable === 'function';
@@ -189,7 +185,6 @@
 		 * @return {boolean}
 		 * @private
 		 * @since 1.0.3
-		 * @todo add to library docs
 		 */
 		function serviceHasCreator(serviceName) {
 			if (!scope.isRegistered(serviceName)) {
@@ -224,11 +219,10 @@
 				return this;
 			},
 			/**
-			 * Return current setted mixins
+			 * Return current set mixins
 			 * @return {Object}
 			 * @public
 			 * @since 1.0.3
-			 * @todo add to library docs
 			 */
 			getMixin: function () {
 				return serviceMixin;
@@ -236,12 +230,11 @@
 			/**
 			 * Takes an object as a parameter. The object contains a set of additional properties and/or methods,
 			 * which have to contain all objects registered in <ServiceLocator>.
-			 * If no parameters passed, or not an Object,only return current mixins.
+			 * If no parameters passed, or not an Object, only return current mixins.
 			 * @param {Object=} objectWithMixins
 			 * @return {Object}
 			 * @public
 			 * @since 1.0.3
-			 * @todo add to library docs
 			 */
 			mixin: function (objectWithMixins) {
 				this.setMixin(objectWithMixins);
@@ -308,7 +301,6 @@
 			 * @return {boolean}
 			 * @public
 			 * @since 1.0.3
-			 * @todo add to library docs
 			 */
 			isRegistered: function (serviceName) {
 				return serviceName in servicesWrap;
@@ -319,7 +311,6 @@
 			 * @return {boolean}
 			 * @public
 			 * @since 1.0.3
-			 * @todo add to library docs
 			 */
 			isInstantiated: function (serviceName) {
 				if (!this.isRegistered(serviceName)) {
@@ -331,33 +322,6 @@
 				return false;
 			},
 			/**
-			 * Calls the <register> function for each element of <arrayOfServices>.
-			 * Each element of the array must contain one of the <ID> or <id> properties for defining the object name,
-			 * and service/object/creator for defining the object under registration.
-			 * There is optional <instantiate>.
-			 * @param {Array<Object>} arrayOfServices
-			 * @return {Array}
-			 * @public
-			 * @deprecated 1.0.3
-			 * @todo add to library docs
-			 */
-			registerAll: function (arrayOfServices) {
-				if (!Array.isArray(arrayOfServices) && !arrayOfServices.length) {
-					return [];
-				}
-				var index, service, serviceName, serviceObject, instantiate, registered = [];
-				for (index = 0; index < arrayOfServices.length; ++index) {
-					service = arrayOfServices[index];
-					serviceName = service['ID'] || service['id'] || service['Id'];
-					serviceObject = service['service'] || service['object'] || service['creator'];
-					instantiate = (service['instantiate'] !== undefined) ? !!service['instantiate'] : true;
-					if (this.register(serviceName, serviceObject, instantiate)) {
-						registered.push(serviceName);
-					}
-				}
-				return registered;
-			},
-			/**
 			 * Returns the instance of a registered object with an indicated <serviceName> or creates a new one in the case of
 			 * lazy instantiation.
 			 * @param {String} serviceName
@@ -365,17 +329,6 @@
 			 * @public
 			 */
 			get: function (serviceName) {
-				return this.instantiate(serviceName);
-			},
-			/**
-			 * Instantiate service by name
-			 * @param {String} serviceName
-			 * @return {null|Object}
-			 * @public
-			 * @since 1.0.3
-			 * @todo add to library docs
-			 */
-			instantiate: function (serviceName) {
 				if (!this.isRegistered(serviceName)) {
 					printLog && console.warn('Service is not registered: ' + serviceName);
 					return null;
@@ -388,6 +341,25 @@
 					return serviceInvoke(serviceName);
 				}
 				return null;
+			},
+			/**
+			 * Instantiate service by name
+			 * @param {String} serviceName
+			 * @return {null|Object}
+			 * @public
+			 * @since 1.0.3
+			 */
+			instantiate: function (serviceName) {
+				if (!this.isRegistered(serviceName)) {
+					return false;
+				}
+				if (this.isInstantiated(serviceName)) {
+					return true;
+				}
+				if (serviceHasCreator(serviceName)) {
+					return !!serviceInvoke(serviceName);
+				}
+				return false;
 			},
 			/**
 			 * Instantiates and returns all registered objects. Can take the <filter> function as an argument.
@@ -443,63 +415,23 @@
 			/**
 			 * Deletes a service named <serviceName> from <ServiceLocator> and returns it's instance.
 			 * The flag <removeMixins> points at the necessity to delete the added mixin properties.
-			 * @param {Array|String} serviceName
-			 * @param {boolean=} removeMixins - default is false
-			 * @return {null|Object}
-			 * @public
-			 * @deprecated 1.0.3
-			 * @todo add to library docs
-			 */
-			unregister: function (serviceName, removeMixins) {
-				var result, index, that = this;
-
-				function remove(id) {
-					var serviceObject, instance;
-					if (!that.isRegistered(id)) {
-						return null;
-					}
-					serviceObject = servicesWrap[id];
-					if (removeMixins && serviceObject.instance) {
-						instance = unmix(serviceObject.instance);
-					} else if (serviceObject.instance) {
-						instance = serviceObject.instance;
-					} else {
-						instance = null;
-					}
-					delete servicesWrap[id];
-					return instance;
-				}
-
-				if (Object.prototype.toString.call(serviceName) === '[object Array]') {
-					result = [];
-					for (index = serviceName.length - 1; index > -1; index--) {
-						result.push(remove(serviceName[index]));
-					}
-				} else {
-					result = remove(serviceName);
-				}
-				return result;
-			},
-			/**
-			 * Deletes a service named <serviceName> from <ServiceLocator> and returns it's instance.
-			 * The flag <removeMixins> points at the necessity to delete the added mixin properties.
 			 * @param {String} serviceName
 			 * @param {boolean=} removeMixins - default is false
 			 * @return {boolean|null|Object}
 			 * @public
 			 * @since 1.0.3
-			 * @todo add to library docs
 			 */
 			unRegister: function (serviceName, removeMixins) {
 				if (!this.isRegistered(serviceName)) {
 					return false;
 				}
 				if (!this.isInstantiated(serviceName)) {
+					delete servicesWrap[serviceName];
 					return null;
 				}
 				var instance = null;
 				if (removeMixins) {
-					instance = unmix(servicesWrap[serviceName].instance);
+					instance = unMix(servicesWrap[serviceName].instance);
 				} else {
 					instance = servicesWrap[serviceName].instance;
 				}
@@ -514,14 +446,12 @@
 			 * @return {Object<Object>}
 			 * @public
 			 */
-			unregisterAll: function (removeMixins) {
-				var id, result = {}, instance;
-				for (id in servicesWrap) {
-					if (servicesWrap.hasOwnProperty(id)) {
-						instance = this.unregister(id, removeMixins);
-						if (instance) {
-							result[id] = instance;
-						}
+			unRegisterAll: function (removeMixins) {
+				var serviceName, result = {}, instance;
+				for (serviceName in servicesWrap) {
+					instance = this.unRegister(serviceName, removeMixins);
+					if (instance) {
+						result[serviceName] = instance;
 					}
 				}
 				return result;

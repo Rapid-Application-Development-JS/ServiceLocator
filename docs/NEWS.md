@@ -1,6 +1,28 @@
 Service Locator Release Notes
 ==========================
 
+Version 1.0.3 - May 06, 2015
+---------------------
+
+#####Compatible changes:
+
+- Additions
+	* `isRegistered` checks wherever service is registered
+	* `isInstantiated` checks wherever service is instantiated
+	* `instantiate` instantiate service by name
+	* `getMixin` get mixins from locator
+	* `mixin` set and/or return mixins
+
+#####Incompatible changes:
+
+- Changed:
+	* `unregister` renamed to `unRegister`
+	* `unRegister` takes only string as service name not array
+
+- Removed:
+	* `registerAll`
+
+
 Version 1.0.2 - Apr 28, 2015
 ---------------------
 
@@ -26,7 +48,6 @@ Version 1.0.1 - Apr 23, 2015
 	* `registerAll` now returns array of string with names of successfully registered services instead of self reference
 
 - Removed:
-
 	* `getLocator`
 
 #####Fixed:

@@ -13,8 +13,8 @@ This allows you to replace the concrete implementation of the dependency without
 
 * option of adding extra attributes and methods using **mixin** pattern to all objects registered in `Service Locator`;
 * option of **lazy instantiation**;
-* unregistering instances;
-* unregistering objects;
+* un-registering instances;
+* un-registering objects;
 * applications can optimize themselves at run-time by selectively adding and removing items from the `Service Locator`;
 * large sections of a library or application can be completely separated, the only link between them becomes the registry;
 * solves the drawback of factories allows to manage the creation of objects automatically and centrally;
@@ -56,6 +56,24 @@ in `Service Locator`.
 
 ```javascript
 ServiceLocator.setMixin({
+	mixinMethod: function () {}
+});
+```
+
+> getMixin (): Object
+
+Return current set mixins.
+
+```javascript
+ServiceLocator.getMixin();
+```
+
+> mixin(objectWithMixins?: Object): Object
+
+Set and/or return mixins.
+
+```javascript
+ServiceLocator.mixin({
 	mixinMethod: function () {}
 });
 ```
@@ -118,6 +136,14 @@ lazy instantiation.
 ServiceLocator.get('serviceName')
 ```
 
+> instantiate (serviceName: String): boolean
+
+Instantiate service by name.
+
+```javascript
+ServiceLocator.instantiate('serviceName')
+```
+
 > instantiateAll (filter?: Function)
 
 Instantiates and returns all registered objects.
@@ -143,6 +169,22 @@ Returns the array of instantiated service objects.
 ServiceLocator.getAllInstantiate();
 ```
 
+> isRegistered (serviceName: String): boolean
+
+Checks wherever service is registered.
+
+```javascript
+ServiceLocator.isRegistered('ServiceName');
+```
+
+> isInstantiated (serviceName: String): boolean
+
+Checks wherever service is instantiated.
+
+```javascript
+ServiceLocator.isInstantiated('ServiceName');
+```
+
 > removeInstance (serviceName: String): boolean
 
 Deletes a service instance with an indicated **serviceName**.
@@ -153,22 +195,22 @@ This do not remove service itself, only instances of it.
 ServiceLocator.removeInstance('ServiceName');
 ```
 
-> unregister (serviceName: Array|String, removeMixins?: boolean): null|Object
+> unRegister (serviceName: Array|String, removeMixins?: boolean): null|Object
 
 Deletes a service named **serviceName** from `Service Locator` and returns it's instance.
 The flag **removeMixins** points at the necessity to delete the added mixin properties.
 
 ```javascript
-ServiceLocator.unregister('ServiceName', true);
+ServiceLocator.unRegister('ServiceName', true);
 ```
 
-> unregisterAll(removeMixins?: boolean): Object
+> unRegisterAll(removeMixins?: boolean): Object
 
 Deletes all registered services from `Service Locator`, and returns the array of their instances.
 The flag **removeMixin** points at the necessity to delete the added properties in the services that will be deleted.
 
 ```javascript
-ServiceLocator.unregisterAll(true);
+ServiceLocator.unRegisterAll(true);
 ```
 
 ## Example
@@ -390,53 +432,13 @@ Current state of registry inside `Service Locator`:
 }
 ```
 
-Add multiple services:
-
-```javascript
-ServiceLocator.registerAll([
-	{
-		/**
-		 * @constructor
-		 * @param {*} value
-		 */
-		creator: function (value) {
-			this.prop = value;
-		},
-		id: 'ServiceFive',
-		instantiate: false
-	},
-	{
-		service: {
-			prop: 'Some property'
-		},
-		id: 'ServiceSix'
-	}
-]);
-```
-
-Newly added services:
-
-```javascript
-{
-	ServiceFive: ▸Object
-	creator:     ▸Function
-}
-```
-
-```javascript
-{
-	ServiceSix: ▸Object
-	instance:   ▸Object
-}
-```
-
-####Previosly setted state
+####Previosly set state
 
 ```javascript
 ServiceLocator.get('ServiceOne').getState(); // "launched"
 ```
 
-####Remove instance, but keep service. This remove any non-default setted data in service object.
+####Remove instance, but keep service. This remove any non-default set data in service object.
 
 ```javascript
 ServiceLocator.removeInstance('ServiceOne');
@@ -454,7 +456,7 @@ As you see, previously saved data won't back.
 ####Deletes a service from "ServiceLocator" and returns it's instance
 
 ```javascript
-var unregisteredService = ServiceLocator.unregister('ServiceFive');
+var unRegisteredService = ServiceLocator.unRegister('ServiceFive');
 ```
 
 ```javascript
@@ -470,7 +472,7 @@ var unregisteredService = ServiceLocator.unregister('ServiceFive');
 ####Same as above, but without mixins
 
 ```javascript
-var unregisteredServiceWithoutMixins = ServiceLocator.unregister('ServiceFive', true);
+var unRegisteredServiceWithoutMixins = ServiceLocator.unRegister('ServiceFive', true);
 ```
 
 Any mentions was removed so:
@@ -483,7 +485,7 @@ ServiceLocator.get('ServiceFive'); // null
 ####Delete all registered services from "ServiceLocator", and return array of their instances
 
 ```javascript
-ServiceLocator.unregisterAll();
+ServiceLocator.unRegisterAll();
 ```
 
 ```javascript
@@ -500,5 +502,5 @@ ServiceLocator.unregisterAll();
 ####Same as above, but returned objects have their mixins removed
 
 ```javascript
-ServiceLocator.unregisterAll(true);
+ServiceLocator.unRegisterAll(true);
 ```
