@@ -1,7 +1,7 @@
 Service Locator Release Notes
 ==========================
 
-Version 1.0.4 - May 06, 2015
+Version 1.0.4 - May 19, 2015
 ---------------------
 
 - Changed:
