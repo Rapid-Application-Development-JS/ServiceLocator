@@ -15,10 +15,10 @@
   /**
    * Service locator
    * @class ServiceLocator
+   * @param {String} mixinsPropertyName
    * @constructor
-   * @version 1.0.3
    */
-  function ServiceLocator() {
+  function ServiceLocator(mixinsPropertyName) {
     /**
      * Wrapper object for services
      * @type {Object}
@@ -37,21 +37,26 @@
      * @private
      */
     var printLog = false;
+    /**
+     * Mixins name
+     * @private
+     */
+    var mixName = isString(mixinsPropertyName) ? mixinsPropertyName : '__mixins';
 
     /**
-     * Add mixins to object. Extends with <__mixins> parameter.
+     * Add mixins to object. Extends with mixins parameter.
      * @param {Object} object
      * @param {...*}
      * @example mix(objectToAddMixin, {id: 12345}, {serviceMixin: function () {}});
      */
     function mix(object/*, ...mixins*/) {
       var mixins = Array.prototype.slice.call(arguments, 1), key, index;
-      object.__mixins = [];
+      object[mixName] = [];
       for (index = 0; index < mixins.length; ++index) {
         for (key in mixins[index]) {
           if (object[key] === undefined) {
             object[key] = mixins[index][key];
-            object.__mixins.push(key);
+            object[mixName].push(key);
           }
         }
       }
@@ -72,11 +77,11 @@
         if (!mixins) {
           return this;
         }
-        this.__mixins = [];
+        this[mixName] = [];
         for (index = 0; index < mixins.length; ++index) {
           for (key in mixins[index]) {
             this[key] = mixin[index][key];
-            this.__mixins.push(key);
+            this[mixName].push(key);
           }
         }
       }
@@ -99,24 +104,24 @@
         return;
       }
       propertyList.recursion++;
-      if (object.hasOwnProperty('__mixins')) {
+      if (object.hasOwnProperty(mixName)) {
         for (index = 0; index < propertyList.length; index += 1) {
           delete object[propertyList[index]];
         }
-        delete object.__mixins;
+        delete object[mixName];
       } else {
         deleteProperty(Object.getPrototypeOf(object), propertyList);
       }
     }
 
     /**
-     * Remove <__mixins> from object
+     * Remove mixins from object
      * @param {Object} object
      * @return {Object}
      */
     function unMix(object) {
-      object.__mixins.recursion = 0;
-      deleteProperty(object, object.__mixins);
+      object[mixName].recursion = 0;
+      deleteProperty(object, object[mixName]);
       return object;
     }
 
