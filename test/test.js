@@ -435,6 +435,13 @@ describe('Services', function () {
 			assert.isTrue(locator.isRegistered(ServiceOne.name),
 				'Service not registered correctly');
 		});
+		it('getAllRegistered()', function () {
+			assert.isArray(locator.getAllRegistered(),
+				'Return type is not array');
+			assert.isTrue(locator.register(ServiceOne.name, ServiceOne));
+			assert.lengthOf(keys(locator.getAllRegistered()), 1,
+				'Unable to get service from list of registered');
+		});
 		it('isInstantiated()', function () {
 			assert.isTrue(locator.register(ServiceOne.name, ServiceOne),
 				ServiceOne.name);

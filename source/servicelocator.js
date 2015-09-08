@@ -384,15 +384,24 @@
 				return result;
 			},
 			/**
-			 * Returns the array of instantiated service objects.
-			 * @return {Array<String>}
+			 * Returns the array or object of instantiated service objects.
+			 * @param {boolean=false} asObject Get all instances as name-service object. Since 1.0.4.
+			 * @return {Array<Object>|Object}
 			 * @public
 			 */
-			getAllInstantiate: function () {
-				var serviceName, result = [];
-				for (serviceName in servicesWrap) {
-					if (this.isInstantiated(serviceName)) {
-						result.push(serviceName);
+			getAllInstantiate: function (asObject) {
+				var serviceName, result = asObject ? {} : [];
+				if (asObject) {
+					for (serviceName in servicesWrap) {
+						if (this.isInstantiated(serviceName)) {
+							result[serviceName] = serviceName;
+						}
+					}
+				} else {
+					for (serviceName in servicesWrap) {
+						if (this.isInstantiated(serviceName)) {
+							result.push(serviceName);
+						}
 					}
 				}
 				return result;
@@ -452,6 +461,21 @@
 					instance = this.unRegister(serviceName, removeMixins);
 					if (instance) {
 						result[serviceName] = instance;
+					}
+				}
+				return result;
+			},
+			/**
+			 * Returns the array of registered service objects.
+			 * @return {Array<String>}
+			 * @public
+			 * @since 1.0.4
+			 */
+			getAllRegistered: function () {
+				var serviceName, result = [];
+				for (serviceName in servicesWrap) {
+					if (this.isRegistered(serviceName)) {
+						result.push(serviceName);
 					}
 				}
 				return result;

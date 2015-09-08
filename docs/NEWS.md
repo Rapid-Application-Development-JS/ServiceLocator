@@ -1,6 +1,17 @@
 Service Locator Release Notes
 ==========================
 
+Version 1.0.4 - Sep 09, 2015
+---------------------
+
+#####Compatible changes:
+
+- Additions
+	* `getAllRegistered` returns the array of registered service objects
+
+- Changed:
+	* `getAllInstantiate` now accepts parameter to get array or object
+
 Version 1.0.3 - May 06, 2015
 ---------------------
 

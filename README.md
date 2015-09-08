@@ -161,12 +161,12 @@ ServiceLocator.instantiateAll(function (serviceName) {
 })
 ```
 
-> getAllInstantiate (): Array<String>
+> getAllInstantiate (asObject?: boolean): Array<Object>
 
-Returns the array of instantiated service objects.
+Returns the array or object of instantiated service objects.
 
 ```javascript
-ServiceLocator.getAllInstantiate();
+ServiceLocator.getAllInstantiate(true);
 ```
 
 > isRegistered (serviceName: String): boolean
@@ -175,6 +175,15 @@ Checks wherever service is registered.
 
 ```javascript
 ServiceLocator.isRegistered('ServiceName');
+```
+
+
+> getAllRegistered (): Array<String>
+
+Returns the array of registered service objects.
+
+```javascript
+ServiceLocator.getAllRegistered();
 ```
 
 > isInstantiated (serviceName: String): boolean
