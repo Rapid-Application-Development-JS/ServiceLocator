@@ -523,3 +523,9 @@ ServiceLocator.unRegisterAll();
 ```javascript
 ServiceLocator.unRegisterAll(true);
 ```
+
+####Remove only instances
+
+```javascript
+ServiceLocator.removeAllInstances();
+```
