@@ -355,7 +355,8 @@ No instance but have construction function:
 #### Default immediate registration
 
 ```javascript
-ServiceLocator.register('ServiceThree', ServiceThree, true, [{mydata: "example information"}]);
+ServiceLocator.register('ServiceThree', ServiceThree, true, [
+	{mydata: "example information"}]);
 ```
 
 ```javascript
@@ -409,7 +410,8 @@ ServiceLocator.get('ServiceThree').getName(); // → "Service has no name!"
 ####Get currently instantiated services
 
 ```javascript
-ServiceLocator.getAllInstantiate(); // ["ServiceOne", "ServiceThree", "ServiceFour"]
+ServiceLocator.getAllInstantiate();
+// ["ServiceOne", "ServiceThree", "ServiceFour"]
 ```
 
 #### Instantiate all service objects but "ServiceTwo"
@@ -489,7 +491,7 @@ var unRegisteredService = ServiceLocator.unRegister('ServiceFive');
 ####Same as above, but without mixins
 
 ```javascript
-var unRegisteredServiceWithoutMixins = ServiceLocator.unRegister('ServiceFive', true);
+var unRegisteredServiceWithoutMixin = ServiceLocator.unRegister('ServiceFive', true);
 ```
 
 Any mentions was removed so:
