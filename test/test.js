@@ -1,8 +1,9 @@
+// If you want to execute this test, please type `npm run test` in root directory
 console.log('\033[2J');
 //
 // < Includes >
 //
-var ServiceLocator = require('../source/servicelocator.js');
+var ServiceLocator = require('../release/servicelocator.min.js');
 var chai = require('chai');
 var assert = chai.assert;
 //
@@ -310,6 +311,17 @@ describe('Services', function () {
 			assert.isTrue(locator.removeInstance(ServiceThree.name));
 			assert.lengthOf(locator.getAllInstantiate(), 1);
 			assert.isTrue(locator.removeInstance(ServiceFour.name));
+			assert.lengthOf(locator.getAllInstantiate(), 0);
+		});
+		it('removeAllInstances()', function () {
+			assert.isTrue(locator.register(ServiceOne.name, ServiceOne, true),
+				'Service instantiation failed: ' + ServiceOne.name);
+			assert.isTrue(locator.register(ServiceTwo.name, ServiceTwo, true),
+				'Service instantiation failed: ' + ServiceTwo.name);
+			assert.lengthOf(locator.instantiateAll(function () {
+				return false;
+			}), 0, 'Not instantiated correctly');
+			locator.removeAllInstances();
 			assert.lengthOf(locator.getAllInstantiate(), 0);
 		});
 	});

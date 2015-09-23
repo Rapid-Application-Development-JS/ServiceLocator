@@ -479,6 +479,17 @@
 					}
 				}
 				return result;
+			},
+			/**
+			 * Deletes a services all <instances>.
+			 * This do not remove services itself, only instances of them.
+			 * @public
+			 * @since 1.0.4
+			 */
+			removeAllInstances: function () {
+				for (var serviceName in servicesWrap) {
+					delete servicesWrap[serviceName].instance;
+				}
 			}
 		};
 		return scope;

@@ -222,6 +222,14 @@ The flag **removeMixin** points at the necessity to delete the added properties 
 ServiceLocator.unRegisterAll(true);
 ```
 
+> removeAllInstances()
+
+Deletes a services all instances.
+
+```javascript
+ServiceLocator.removeAllInstances();
+```
+
 ## Example
 
 ###Creating a new instance:
