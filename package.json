@@ -1,7 +1,5 @@
 {
-  "authors": [
-    "Yuriy Luchaninov <y.luchaninov@mobidev.biz> (http://mobidev.biz/)"
-  ],
+  "author": "Yuriy Luchaninov <y.luchaninov@mobidev.biz> (http://mobidev.biz/)",
   "bugs": {
     "url": "https://github.com/Rapid-Application-Development-JS/ServiceLocator/issues"
   },
@@ -40,6 +38,10 @@
     "lib": "source",
     "man": "man"
   },
+  "engineStrict": false,
+  "engines": {
+    "node": "0.12.0"
+  },
   "homepage": "https://github.com/Rapid-Application-Development-JS/ServiceLocator",
   "keywords": [
     "service-locator",
@@ -48,14 +50,8 @@
     "decouple",
     "registry"
   ],
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/Rapid-Application-Development-JS/ServiceLocator/blob/master/LICENSE.md"
-  },
-  "main": [
-    "release/servicelocator.min.js",
-    "release/servicelocator.min.js.map"
-  ],
+  "license": "MIT",
+  "main": "release/servicelocator.min.js",
   "name": "servicelocatorjs",
   "private": false,
   "readmeFilename": "README.md",
